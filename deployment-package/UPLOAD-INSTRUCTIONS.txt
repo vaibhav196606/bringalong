@@ -1,0 +1,21 @@
+HOSTINGER UPLOAD INSTRUCTIONS
+============================
+
+1. Login to your Hostinger control panel
+2. Go to File Manager
+3. Navigate to public_html (or your domain folder)
+4. Upload ALL files from this deployment-package folder
+5. In Hostinger terminal, run:
+   - cd public_html
+   - npm install
+   - npm start
+
+6. Configure your domain to use Node.js
+
+FILES TO UPLOAD:
+- All files in this deployment-package folder
+- Make sure .env file has your actual MongoDB connection string
+- Update package.json if needed
+
+Your app will be available at: https://yourdomain.com
+API will be available at: https://yourdomain.com/api

@@ -1,0 +1,48 @@
+import { Routes, Route } from 'react-router-dom'
+import { AuthProvider } from './contexts/AuthContext'
+import { CurrencyProvider } from './contexts/CurrencyContext'
+import Navbar from './components/Navbar'
+import ScrollToTop from './components/ScrollToTop'
+import Home from './pages/Home'
+import PostTrip from './pages/PostTrip'
+import Trips from './pages/Trips'
+import AllTrips from './pages/AllTrips'
+import Profile from './pages/Profile'
+import TripDetails from './pages/TripDetails'
+import UserProfile from './pages/UserProfile'
+import SearchResults from './pages/SearchResults'
+import Login from './pages/Login'
+import Register from './pages/Register'
+import PrivacyPolicy from './pages/PrivacyPolicy'
+import TermsAndConditions from './pages/TermsAndConditions'
+
+function App() {
+  return (
+    <CurrencyProvider>
+      <AuthProvider>
+        <div className="min-h-screen bg-gray-50">
+          <Navbar />
+          <ScrollToTop />
+          <main>
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/search" element={<SearchResults />} />
+              <Route path="/post-trip" element={<PostTrip />} />
+              <Route path="/trips" element={<Trips />} />
+              <Route path="/all-trips" element={<AllTrips />} />
+              <Route path="/profile" element={<Profile />} />
+              <Route path="/trip/:id" element={<TripDetails />} />
+              <Route path="/user/:id" element={<UserProfile />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/register" element={<Register />} />
+              <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+              <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
+            </Routes>
+          </main>
+        </div>
+      </AuthProvider>
+    </CurrencyProvider>
+  )
+}
+
+export default App
