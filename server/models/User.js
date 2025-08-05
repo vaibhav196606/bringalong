@@ -18,7 +18,7 @@ const userSchema = new mongoose.Schema({
   },
   linkedinUrl: {
     type: String,
-    required: function() { return this.role === 'traveler'; }
+    trim: true
   },
   instagramId: {
     type: String,

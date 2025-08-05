@@ -6,7 +6,60 @@ import path from 'path';
 import fs from 'fs';
 import User from '../models/User.js';
 
+console.log('🚀 Auth routes module loaded');
+
 const router = express.Router();
+
+// Simple test endpoint to verify database operations
+router.post('/test-db', async (req, res) => {
+  console.log('🧪 Testing database write operation...');
+  try {
+    const testUser = new User({
+      name: 'Test User',
+      email: `test${Date.now()}@example.com`,
+      password: 'hashedpassword',
+      role: 'both'
+    });
+    
+    const savedUser = await testUser.save();
+    console.log('✅ Test user saved successfully:', savedUser._id);
+    
+    res.json({ 
+      success: true, 
+      message: 'Database write test successful',
+      userId: savedUser._id 
+    });
+  } catch (error) {
+    console.error('❌ Database test failed:', error);
+    res.status(500).json({ 
+      success: false, 
+      message: 'Database test failed',
+      error: error.message 
+    });
+  }
+});
+
+// Simple test endpoint to verify database read operations
+router.get('/test-db-read', async (req, res) => {
+  console.log('📖 Testing database read operation...');
+  try {
+    const userCount = await User.countDocuments();
+    console.log(`📊 Found ${userCount} users in database`);
+    
+    res.json({ 
+      success: true, 
+      message: 'Database read test successful',
+      userCount: userCount
+    });
+  } catch (error) {
+    console.error('❌ Database read test failed:', error);
+    res.status(500).json({ 
+      success: false, 
+      message: 'Database read test failed',
+      error: error.message 
+    });
+  }
+});
 
 // Create uploads directory if it doesn't exist
 const uploadsDir = 'uploads/avatars';
@@ -42,6 +95,8 @@ const upload = multer({
 
 // Register
 router.post('/register', async (req, res) => {
+  console.log('🔥 Registration attempt started');
+  console.log('Request body:', req.body);
   try {
     const { name, email, password, linkedinUrl, instagramId, phone, role } = req.body;
 
@@ -91,7 +146,12 @@ router.post('/register', async (req, res) => {
     });
   } catch (error) {
     console.error('Registration error:', error);
-    res.status(500).json({ message: 'Server error during registration' });
+    console.error('Error details:', error.message);
+    console.error('Stack trace:', error.stack);
+    res.status(500).json({ 
+      message: 'Server error during registration',
+      error: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error'
+    });
   }
 });
 

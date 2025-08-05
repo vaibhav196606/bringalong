@@ -58,6 +58,13 @@ app.get('/api/health', (req, res) => {
   res.json({ message: 'Server is running!', timestamp: new Date().toISOString() });
 });
 
+// Simple DB test endpoint directly on main app
+app.get('/api/test-simple', (req, res) => {
+  console.log('🧪 Simple test endpoint called');
+  res.json({ success: true, message: 'Simple endpoint working!', timestamp: new Date().toISOString() });
+});
+
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
+  console.log('🔧 DEBUG: Simple endpoint should be available at /api/test-simple');
 });
