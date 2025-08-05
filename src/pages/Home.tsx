@@ -4,6 +4,7 @@ import { useAuth } from '../contexts/AuthContext'
 import { apiService } from '../services/api'
 import LocationAutocomplete from '../components/LocationAutocomplete'
 import PriceDisplay from '../components/PriceDisplay'
+import SEO from '../components/SEO'
 import { getUserDetailedLocation, filterTripsByLocation, debugLocationFiltering, type UserLocation } from '../utils/locationUtils'
 import { 
   MagnifyingGlassIcon,
@@ -190,6 +191,12 @@ const Home: React.FC = () => {
 
   return (
     <>
+      <SEO 
+        title="BringAlong - Connect with Verified Travelers | Global Item Delivery Platform"
+        description="Connect with verified LinkedIn travelers to bring items from around the world. Post trips, request items, and earn service fees while helping others get products from different countries safely and affordably."
+        keywords="travel delivery, international shipping, traveler platform, bring items, global delivery, LinkedIn verified travelers, item requests, travel service, international shopping, peer-to-peer delivery"
+        url="https://www.bringalong.net/"
+      />
       <div className="bg-white">
       {/* Hero Section with Search */}
       <div className="relative bg-gradient-to-br from-blue-600 to-blue-800 text-white">

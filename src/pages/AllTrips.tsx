@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { apiService } from '../services/api'
 import PriceDisplay from '../components/PriceDisplay'
 import LocationAutocomplete from '../components/LocationAutocomplete'
+import SEO from '../components/SEO'
 import { useCurrency } from '../contexts/CurrencyContext'
 import { 
   MagnifyingGlassIcon,
@@ -218,7 +219,14 @@ const AllTrips: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <>
+      <SEO 
+        title="All Recent Trips - BringAlong | Find Verified Travelers Worldwide"
+        description="Browse all recent trips from verified LinkedIn travelers worldwide. Find someone going to your destination or discover new travel opportunities to bring items across borders."
+        keywords="browse trips, find travelers, worldwide trips, verified travelers, LinkedIn travelers, international delivery, travel opportunities"
+        url="https://www.bringalong.net/all-trips"
+      />
+      <div className="min-h-screen bg-gray-50 py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="text-center mb-8">
@@ -446,7 +454,8 @@ const AllTrips: React.FC = () => {
           </>
         )}
       </div>
-    </div>
+      </div>
+    </>
   )
 }
 

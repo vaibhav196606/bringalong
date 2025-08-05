@@ -1,0 +1,28 @@
+{
+  "name": "BringAlong - Connect with Verified Travelers",
+  "short_name": "BringAlong",
+  "description": "Connect with verified LinkedIn travelers to bring items from around the world",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#3B82F6",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "categories": [
+    "travel",
+    "business",
+    "productivity"
+  ],
+  "lang": "en"
+}

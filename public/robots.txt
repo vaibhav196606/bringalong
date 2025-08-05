@@ -1,0 +1,14 @@
+User-agent: *
+Allow: /
+
+# Sitemap location
+Sitemap: https://www.bringalong.net/sitemap.xml
+
+# Crawl-delay (optional)
+Crawl-delay: 1
+
+# Disallow private pages
+Disallow: /trips/
+Disallow: /requests/
+Disallow: /messages/
+Disallow: /profile/
