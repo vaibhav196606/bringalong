@@ -111,9 +111,12 @@ const Login: React.FC = () => {
               </div>
 
               <div className="text-sm">
-                <a href="#" className="font-medium text-primary-600 hover:text-primary-500">
+                <Link
+                  to="/auth/forgot-password"
+                  className="font-medium text-primary-600 hover:text-primary-500"
+                >
                   Forgot your password?
-                </a>
+                </Link>
               </div>
             </div>
 
@@ -140,7 +143,7 @@ const Login: React.FC = () => {
 
             <div className="mt-6">
               <Link
-                to="/register"
+                to="/auth/register"
                 className="w-full flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
               >
                 Create an account

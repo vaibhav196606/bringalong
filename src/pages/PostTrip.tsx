@@ -72,7 +72,7 @@ const PostTrip: React.FC = () => {
 
   React.useEffect(() => {
     if (!user) {
-      navigate('/login')
+      navigate('/auth/login')
     }
   }, [user, navigate])
 

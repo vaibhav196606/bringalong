@@ -14,7 +14,7 @@ const Messages: React.FC = () => {
             <h1 className="text-3xl font-bold text-gray-900 mb-4">Please Log In</h1>
             <p className="text-gray-600">You need to be logged in to view your messages.</p>
             <Link
-              to="/login"
+              to="/auth/login"
               className="mt-4 inline-block bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-lg transition-colors"
             >
               Log In

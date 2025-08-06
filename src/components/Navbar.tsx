@@ -41,7 +41,7 @@ const Navbar: React.FC = () => {
 
   const handleNavigation = (path: string, name: string) => {
     if (name === 'My Trips' && !user) {
-      navigate('/login')
+      navigate('/auth/login')
       return
     }
     navigate(path)
@@ -139,13 +139,13 @@ const Navbar: React.FC = () => {
                 <NavbarCurrencySelector />
                 
                 <Link
-                  to="/login"
+                  to="/auth/login"
                   className="text-gray-700 hover:text-primary-600 px-3 py-2 rounded-md text-sm font-medium"
                 >
                   Login
                 </Link>
                 <Link
-                  to="/register"
+                  to="/auth/register"
                   className="btn-primary"
                 >
                   Sign Up
@@ -239,14 +239,14 @@ const Navbar: React.FC = () => {
               ) : (
                 <div className="pt-4 border-t space-y-1">
                   <Link
-                    to="/login"
+                    to="/auth/login"
                     onClick={() => setIsMenuOpen(false)}
                     className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-primary-600"
                   >
                     Login
                   </Link>
                   <Link
-                    to="/register"
+                    to="/auth/register"
                     onClick={() => setIsMenuOpen(false)}
                     className="block px-3 py-2 rounded-md text-base font-medium bg-primary-600 text-white hover:bg-primary-700"
                   >

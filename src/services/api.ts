@@ -40,6 +40,9 @@ export const apiService = {
     login: (credentials: any) => api.post('/auth/login', credentials),
     getCurrentUser: () => api.get('/auth/me'),
     updateProfile: (profileData: any) => api.put('/auth/profile', profileData),
+    forgotPassword: (email: string) => api.post('/auth/forgot-password', { email }),
+    verifyResetToken: (token: string) => api.get(`/auth/verify-reset-token/${token}`),
+    resetPassword: (token: string, password: string) => api.post('/auth/reset-password', { token, password }),
   },
 
   // Trip endpoints
