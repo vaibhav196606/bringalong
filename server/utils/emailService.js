@@ -8,11 +8,18 @@ class EmailService {
 
   async init() {
     try {
+      console.log('🔧 Initializing email service...');
+      console.log('📧 Environment check:');
+      console.log('- NODE_ENV:', process.env.NODE_ENV);
+      console.log('- EMAIL_USER:', process.env.EMAIL_USER ? '✅ Set' : '❌ Missing');
+      console.log('- EMAIL_PASSWORD:', process.env.EMAIL_PASSWORD ? '✅ Set' : '❌ Missing');
+
       // Configure transporter based on environment
       if (process.env.NODE_ENV === 'production') {
         // Production: Use Gmail with App Password
         if (process.env.EMAIL_USER && process.env.EMAIL_PASSWORD) {
-          this.transporter = nodemailer.createTransporter({
+          console.log('🔧 Setting up Gmail SMTP for production...');
+          this.transporter = nodemailer.createTransport({
             service: 'gmail',
             auth: {
               user: process.env.EMAIL_USER,
@@ -25,8 +32,9 @@ class EmailService {
         }
       } else {
         // Development: Use Ethereal Email for testing
+        console.log('🔧 Setting up Ethereal Email for development...');
         let testAccount = await nodemailer.createTestAccount();
-        this.transporter = nodemailer.createTransporter({
+        this.transporter = nodemailer.createTransport({
           host: 'smtp.ethereal.email',
           port: 587,
           secure: false,
@@ -39,8 +47,9 @@ class EmailService {
 
       // Verify transporter
       if (this.transporter) {
+        console.log('🔍 Verifying email configuration...');
         await this.transporter.verify();
-        console.log('📧 Email service initialized successfully');
+        console.log('✅ Email service initialized successfully');
       }
     } catch (error) {
       console.error('❌ Email service initialization failed:', error.message);
