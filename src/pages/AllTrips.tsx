@@ -392,17 +392,9 @@ const AllTrips: React.FC = () => {
                   
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-2">
-                      {trip.userId.avatar ? (
-                        <img
-                          src={trip.userId.avatar}
-                          alt={trip.userId.name}
-                          className="w-8 h-8 rounded-full object-cover"
-                        />
-                      ) : (
-                        <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center">
-                          <UserIcon className="w-4 h-4 text-gray-500" />
-                        </div>
-                      )}
+                      <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center">
+                        <UserIcon className="w-4 h-4 text-gray-500" />
+                      </div>
                       <div>
                         <div className="text-sm font-medium">{trip.userId.name}</div>
                         {trip.userId.verified && (

@@ -29,7 +29,6 @@ const Profile: React.FC = () => {
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState<string | null>(null)
-  const [uploadingAvatar, setUploadingAvatar] = useState(false)
 
   const [formData, setFormData] = useState({
     name: '',
@@ -109,47 +108,6 @@ const Profile: React.FC = () => {
     setError(null)
   }
 
-  const handleAvatarUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0]
-    if (!file) return
-
-    // Validate file type
-    if (!file.type.startsWith('image/')) {
-      setError('Please select an image file')
-      return
-    }
-
-    // Validate file size (max 5MB)
-    if (file.size > 5 * 1024 * 1024) {
-      setError('Image must be less than 5MB')
-      return
-    }
-
-    try {
-      setUploadingAvatar(true)
-      setError(null)
-
-      const formData = new FormData()
-      formData.append('avatar', file)
-
-      const response = await apiService.auth.uploadAvatar(formData)
-      setProfile(response.data.user)
-      
-      // Update the auth context with new user data
-      if (user) {
-        updateUser(response.data.user)
-      }
-      
-      setSuccess('Profile picture updated successfully!')
-      setTimeout(() => setSuccess(null), 3000)
-    } catch (error: any) {
-      console.error('Error uploading avatar:', error)
-      setError(error.response?.data?.message || 'Failed to upload profile picture')
-    } finally {
-      setUploadingAvatar(false)
-    }
-  }
-
   const formatDate = (dateString: string) => {
     const date = new Date(dateString)
     return date.toLocaleDateString('en-US', {
@@ -186,32 +144,8 @@ const Profile: React.FC = () => {
           <div className="bg-gradient-to-r from-blue-600 to-blue-700 px-6 py-8">
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-4">
-                <div className="relative w-20 h-20 bg-white rounded-full flex items-center justify-center">
-                  {profile.avatar ? (
-                    <img 
-                      src={profile.avatar} 
-                      alt={profile.name}
-                      className="w-20 h-20 rounded-full object-cover"
-                    />
-                  ) : (
-                    <UserIcon className="w-10 h-10 text-blue-600" />
-                  )}
-                  <label htmlFor="avatar-upload" className="absolute -bottom-2 -right-2 bg-blue-600 text-white rounded-full p-2 cursor-pointer hover:bg-blue-700 transition-colors">
-                    <PencilIcon className="w-4 h-4" />
-                  </label>
-                  <input
-                    id="avatar-upload"
-                    type="file"
-                    accept="image/*"
-                    onChange={handleAvatarUpload}
-                    className="hidden"
-                    disabled={uploadingAvatar}
-                  />
-                  {uploadingAvatar && (
-                    <div className="absolute inset-0 bg-black bg-opacity-50 rounded-full flex items-center justify-center">
-                      <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-white"></div>
-                    </div>
-                  )}
+                <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center">
+                  <UserIcon className="w-10 h-10 text-blue-600" />
                 </div>
                 <div className="text-white">
                   <h1 className="text-2xl font-bold">{profile.name}</h1>

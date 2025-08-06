@@ -356,17 +356,9 @@ const SearchResults: React.FC = () => {
                           {/* Traveler Info */}
                           <div className="flex items-center justify-between mb-4">
                             <div className="flex items-center">
-                              {trip.userId.avatar ? (
-                                <img
-                                  src={trip.userId.avatar}
-                                  alt={trip.userId.name}
-                                  className="w-8 h-8 rounded-full object-cover mr-3"
-                                />
-                              ) : (
-                                <div className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center mr-3">
-                                  <UserIcon className="w-4 h-4 text-gray-500" />
-                                </div>
-                              )}
+                              <div className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center mr-3">
+                                <UserIcon className="w-4 h-4 text-gray-500" />
+                              </div>
                               <div>
                                 <p className="text-sm font-medium text-gray-900">{trip.userId.name}</p>
                                 {trip.userId.verified && (
@@ -404,7 +396,7 @@ const SearchResults: React.FC = () => {
                       <MapPinIcon className="w-5 h-5 mr-2 text-orange-500" />
                       Similar Routes Near You
                     </h3>
-                    <p className="text-sm text-gray-500 mt-1">Trips from or to the same country</p>
+                    <p className="text-sm text-gray-500 mt-1">Trips from and to the same country</p>
                   </div>
                   <div className="flex-1 border-t border-gray-300"></div>
                 </div>
@@ -457,17 +449,9 @@ const SearchResults: React.FC = () => {
                           {/* Traveler Info */}
                           <div className="flex items-center justify-between mb-4">
                             <div className="flex items-center">
-                              {trip.userId.avatar ? (
-                                <img
-                                  src={trip.userId.avatar}
-                                  alt={trip.userId.name}
-                                  className="w-8 h-8 rounded-full object-cover mr-3"
-                                />
-                              ) : (
-                                <div className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center mr-3">
-                                  <UserIcon className="w-4 h-4 text-gray-500" />
-                                </div>
-                              )}
+                              <div className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center mr-3">
+                                <UserIcon className="w-4 h-4 text-gray-500" />
+                              </div>
                               <div>
                                 <p className="text-sm font-medium text-gray-900">{trip.userId.name}</p>
                                 {trip.userId.verified && (

@@ -102,17 +102,9 @@ const Navbar: React.FC = () => {
                     onClick={() => setIsUserDropdownOpen(!isUserDropdownOpen)}
                     className="flex items-center space-x-2 text-gray-700 hover:text-primary-600 px-3 py-2 rounded-md text-sm font-medium transition-colors"
                   >
-                  {user.avatar ? (
-                    <img
-                      src={user.avatar}
-                      alt={user.name}
-                      className="w-8 h-8 rounded-full"
-                    />
-                  ) : (
-                    <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center">
-                      <UserIcon className="w-5 h-5 text-gray-500" />
-                    </div>
-                  )}
+                  <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center">
+                    <UserIcon className="w-5 h-5 text-gray-500" />
+                  </div>
                   <span className="text-sm font-medium text-gray-700">
                     {user.name}
                   </span>
@@ -216,11 +208,9 @@ const Navbar: React.FC = () => {
               {user ? (
                 <div className="pt-4 border-t">
                   <div className="flex items-center space-x-3 px-3 py-2">
-                    <img
-                      src={user.avatar || 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=40&h=40&fit=crop&crop=face'}
-                      alt={user.name}
-                      className="w-10 h-10 rounded-full"
-                    />
+                  <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center">
+                    <UserIcon className="w-6 h-6 text-gray-500" />
+                  </div>
                     <div>
                       <div className="text-base font-medium text-gray-800">
                         {user.name}

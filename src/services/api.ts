@@ -40,15 +40,6 @@ export const apiService = {
     login: (credentials: any) => api.post('/auth/login', credentials),
     getCurrentUser: () => api.get('/auth/me'),
     updateProfile: (profileData: any) => api.put('/auth/profile', profileData),
-    uploadAvatar: (formData: FormData) => {
-      const token = localStorage.getItem('authToken');
-      return axios.post(`${API_BASE_URL}/auth/avatar`, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-          Authorization: token ? `Bearer ${token}` : '',
-        },
-      });
-    },
   },
 
   // Trip endpoints
