@@ -53,6 +53,12 @@ const userSchema = new mongoose.Schema({
     type: String,
     enum: ['traveler', 'requester', 'both'],
     default: 'both'
+  },
+  resetPasswordToken: {
+    type: String
+  },
+  resetPasswordExpires: {
+    type: Date
   }
 }, {
   timestamps: true
