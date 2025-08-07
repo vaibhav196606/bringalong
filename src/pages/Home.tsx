@@ -219,15 +219,10 @@ const Home: React.FC = () => {
             <h1 className="text-4xl md:text-6xl font-bold mb-6">
               BringAlong
             </h1>
-            <p className="text-xl md:text-2xl mb-4 text-blue-100 max-w-4xl mx-auto">
+            <p className="text-xl md:text-2xl mb-8 text-blue-100 max-w-4xl mx-auto">
               Connect with verified travelers on LinkedIn. Find people going to your destination 
               or post your trip to help others while earning service fees.
             </p>
-            <div className="bg-white/10 backdrop-blur-sm rounded-lg px-4 py-2 inline-block mb-8">
-              <p className="text-sm font-medium text-white">
-                🌍 Non-Profit Community • 💰 No Platform Fees • 🤝 Keep 100% of Service Fees
-              </p>
-            </div>
           </div>
 
           {/* Search Form */}
