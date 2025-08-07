@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline'
 
@@ -10,6 +10,11 @@ const Login: React.FC = () => {
   const [error, setError] = useState('')
   const { login, loading } = useAuth()
   const navigate = useNavigate()
+  const location = useLocation()
+  
+  // Get message and return URL from navigation state
+  const stateMessage = location.state?.message
+  const returnTo = location.state?.returnTo || '/'
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -17,7 +22,7 @@ const Login: React.FC = () => {
     
     try {
       await login(email, password)
-      navigate('/')
+      navigate(returnTo)
     } catch (err: any) {
       setError(err.message || 'Invalid email or password')
     }
@@ -42,6 +47,12 @@ const Login: React.FC = () => {
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
         <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
           <form className="space-y-6" onSubmit={handleSubmit}>
+            {stateMessage && (
+              <div className="bg-blue-50 border border-blue-200 text-blue-700 px-4 py-3 rounded">
+                {stateMessage}
+              </div>
+            )}
+            
             {error && (
               <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
                 {error}

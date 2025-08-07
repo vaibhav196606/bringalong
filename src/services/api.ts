@@ -71,6 +71,9 @@ export const apiService = {
 
   // Health check
   health: () => api.get('/health'),
+
+  // Stats endpoint
+  stats: () => api.get('/stats'),
 };
 
 export default apiService;

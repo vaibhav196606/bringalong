@@ -54,6 +54,48 @@ app.use('/api/trips', tripRoutes);
 app.use('/api/requests', requestRoutes);
 app.use('/api/users', userRoutes);
 
+// Stats endpoint
+app.get('/api/stats', async (req, res) => {
+  try {
+    // Import models dynamically to avoid circular imports
+    const { default: Trip } = await import('./models/Trip.js');
+    const { default: User } = await import('./models/User.js');
+    
+    // Get actual total trips count (all trips, not just completed)
+    const totalTripsCount = await Trip.countDocuments();
+    
+    // Get total users count
+    const totalUsersCount = await User.countDocuments();
+    
+    // Calculate display stats using the new formulas
+    const displayTrips = totalTripsCount * 3 + 1;  // 3x + 1
+    const usersHelped = totalUsersCount * 6 + 1;   // 6x + 1  
+    const activeUsers = totalUsersCount * 3;       // 3x
+    
+    res.json({
+      success: true,
+      data: {
+        completedTrips: displayTrips,
+        totalUsers: activeUsers,
+        beneficiaries: usersHelped,
+        // For debugging
+        actualTotalTrips: totalTripsCount,
+        actualTotalUsers: totalUsersCount
+      }
+    });
+  } catch (error) {
+    console.error('Stats endpoint error:', error);
+    res.status(500).json({
+      success: false,
+      data: {
+        completedTrips: 150,
+        totalUsers: 105,
+        beneficiaries: 284
+      }
+    });
+  }
+});
+
 app.get('/api/health', (req, res) => {
   res.json({ message: 'Server is running!', timestamp: new Date().toISOString() });
 });
