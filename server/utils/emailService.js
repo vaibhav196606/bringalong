@@ -729,8 +729,11 @@ Need help? Contact our support team.
             </div>
 
             <div style="background: #f0f9ff; padding: 20px; border-radius: 10px; margin: 25px 0; text-align: center;">
-                <h4 style="color: #0ea5e9; margin-bottom: 10px;">🔔 What's Next?</h4>
-                <p style="margin: 0; color: #0369a1;">You'll receive email notifications when someone requests items for your trip. Check your dashboard regularly for new opportunities!</p>
+                <h4 style="color: #0ea5e9; margin-bottom: 15px;">🔔 What's Next?</h4>
+                <div style="text-align: left; color: #0369a1;">
+                    <p style="margin: 10px 0;"><strong> LinkedIn Connections:</strong> Interested users will connect with you via LinkedIn to discuss details and verify authenticity.</p>
+                    <p style="margin: 10px 0;"><strong>📱 Stay Active:</strong> Check your LinkedIn messages regularly for new connection requests and opportunities!</p>
+                </div>
             </div>
             
             <div class="footer">
@@ -771,7 +774,8 @@ TIPS FOR SUCCESS:
 - Keep records of all agreements
 
 WHAT'S NEXT:
-You'll receive email notifications when someone requests items for your trip. Check your dashboard regularly for new opportunities!
+ LinkedIn Connections: Interested users will connect with you via LinkedIn to discuss details and verify authenticity.
+📱 Stay Active: Check your LinkedIn messages regularly for new connection requests and opportunities!
 
 Manage your trip: ${process.env.FRONTEND_URL || 'https://bringalong.vercel.app'}/trips
 
