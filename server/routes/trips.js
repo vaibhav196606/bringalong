@@ -4,6 +4,7 @@ import Trip from '../models/Trip.js';
 import User from '../models/User.js';
 import { isCountrySearch, createCountryRegex } from '../utils/countryUtils.js';
 import { manualCleanup } from '../utils/cleanup.js';
+import emailService from '../utils/emailService.js';
 
 const router = express.Router();
 
@@ -416,6 +417,29 @@ router.post('/', verifyToken, async (req, res) => {
     
     const populatedTrip = await Trip.findById(trip._id)
       .populate('userId', 'name avatar rating verified');
+
+    // Send trip post confirmation email
+    try {
+      const user = await User.findById(req.user.userId);
+      if (user && user.email) {
+        const tripDetails = {
+          _id: trip._id,
+          fromCity,
+          fromCountry,
+          toCity,
+          toCountry,
+          travelDate,
+          serviceFee,
+          currency,
+          itemsCanBring
+        };
+        await emailService.sendTripPostConfirmationEmail(user.email, user.name, tripDetails);
+        console.log('✅ Trip post confirmation email sent successfully');
+      }
+    } catch (emailError) {
+      console.error('❌ Failed to send trip post confirmation email:', emailError);
+      // Don't fail trip creation if email fails
+    }
 
     res.status(201).json(populatedTrip);
   } catch (error) {

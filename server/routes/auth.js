@@ -130,6 +130,15 @@ router.post('/register', async (req, res) => {
 
     await user.save();
 
+    // Send welcome email
+    try {
+      await emailService.sendWelcomeEmail(email, name, linkedinUrl);
+      console.log('✅ Welcome email sent successfully');
+    } catch (emailError) {
+      console.error('❌ Failed to send welcome email:', emailError);
+      // Don't fail registration if email fails
+    }
+
     // Generate JWT token
     const token = jwt.sign(
       { userId: user._id, email: user.email },
