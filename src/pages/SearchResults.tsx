@@ -47,6 +47,9 @@ const SearchResults: React.FC = () => {
   
   const [trips, setTrips] = useState<Trip[]>([])
   const [loading, setLoading] = useState(true)
+  const [currentPage, setCurrentPage] = useState(1)
+  const [totalPages, setTotalPages] = useState(1)
+  const [totalTrips, setTotalTrips] = useState(0)
   const [searchParams, setSearchParams] = useState<SearchParams>({})
   const [exactMatches, setExactMatches] = useState(0)
   const [broaderMatches, setBroaderMatches] = useState(0)
@@ -77,21 +80,34 @@ const SearchResults: React.FC = () => {
       travelDate: params.travelDate || ''
     })
 
-    searchTrips(params)
+    setCurrentPage(1) // Reset to first page for new search
+    searchTrips(params, 1)
   }, [location.search])
 
-  const searchTrips = async (params: SearchParams) => {
+  const searchTrips = async (params: SearchParams, page: number = 1) => {
     try {
       setLoading(true)
-      const apiParams: any = {}
+      const apiParams: any = {
+        page,
+        limit: 12, // Show 12 trips per page
+        sortBy: 'travelDate',
+        sortOrder: 'asc' // Show closest dates first
+      }
+      
+      // Only add search parameters if they exist
       if (params.fromLocation) apiParams.from = params.fromLocation
       if (params.toLocation) apiParams.to = params.toLocation
       if (params.travelDate) apiParams.fromDate = params.travelDate
       
       const response = await apiService.trips.getAll(apiParams)
-      setTrips(response.data.trips || [])
-      setExactMatches(response.data.exactMatches || 0)
-      setBroaderMatches(response.data.broaderMatches || 0)
+      const responseData = response.data
+      
+      setTrips(responseData.trips || [])
+      setTotalPages(responseData.totalPages || 1)
+      setTotalTrips(responseData.total || 0)
+      setCurrentPage(page)
+      setExactMatches(responseData.exactMatches || 0)
+      setBroaderMatches(responseData.broaderMatches || 0)
     } catch (error) {
       console.error('Error searching trips:', error)
     } finally {
@@ -408,6 +424,70 @@ const SearchResults: React.FC = () => {
                   </div>
                 </div>
               </div>
+            )}
+          </div>
+        )}
+
+        {/* Pagination Controls */}
+        {trips.length > 0 && totalPages > 1 && (
+          <div className="flex justify-center items-center space-x-4 mt-8">
+            <button
+              onClick={() => {
+                const newPage = currentPage - 1;
+                setCurrentPage(newPage);
+                searchTrips(searchParams, newPage);
+              }}
+              disabled={currentPage === 1}
+              className="px-4 py-2 bg-blue-600 text-white rounded-md disabled:bg-gray-300 disabled:cursor-not-allowed hover:bg-blue-700 transition-colors"
+            >
+              Previous
+            </button>
+            
+            <div className="flex items-center space-x-2">
+              {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                const pageNum = Math.max(1, Math.min(totalPages - 4, currentPage - 2)) + i;
+                if (pageNum <= totalPages) {
+                  return (
+                    <button
+                      key={pageNum}
+                      onClick={() => {
+                        setCurrentPage(pageNum);
+                        searchTrips(searchParams, pageNum);
+                      }}
+                      className={`px-3 py-2 rounded-md ${
+                        currentPage === pageNum
+                          ? 'bg-blue-600 text-white'
+                          : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                      } transition-colors`}
+                    >
+                      {pageNum}
+                    </button>
+                  );
+                }
+                return null;
+              })}
+            </div>
+            
+            <button
+              onClick={() => {
+                const newPage = currentPage + 1;
+                setCurrentPage(newPage);
+                searchTrips(searchParams, newPage);
+              }}
+              disabled={currentPage === totalPages}
+              className="px-4 py-2 bg-blue-600 text-white rounded-md disabled:bg-gray-300 disabled:cursor-not-allowed hover:bg-blue-700 transition-colors"
+            >
+              Next
+            </button>
+          </div>
+        )}
+
+        {/* Results Summary */}
+        {trips.length > 0 && (
+          <div className="text-center mt-4 text-gray-600">
+            Showing {((currentPage - 1) * 12) + 1} to {Math.min(currentPage * 12, totalTrips)} of {totalTrips} trips
+            {totalPages > 1 && (
+              <span className="ml-2">• Page {currentPage} of {totalPages}</span>
             )}
           </div>
         )}
