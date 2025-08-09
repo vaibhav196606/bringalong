@@ -6,6 +6,7 @@ import authRoutes from './routes/auth.js';
 import tripRoutes from './routes/trips.js';
 import requestRoutes from './routes/requests.js';
 import userRoutes from './routes/users.js';
+import notificationRoutes from './routes/notifications.js';
 import { scheduleCleanup } from './utils/cleanup.js';
 
 dotenv.config();
@@ -53,6 +54,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/trips', tripRoutes);
 app.use('/api/requests', requestRoutes);
 app.use('/api/users', userRoutes);
+app.use('/api/notifications', notificationRoutes);
 
 // Stats endpoint
 app.get('/api/stats', async (req, res) => {

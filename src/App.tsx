@@ -17,6 +17,7 @@ import ForgotPassword from './pages/ForgotPassword'
 import ResetPassword from './pages/ResetPassword'
 import PrivacyPolicy from './pages/PrivacyPolicy'
 import TermsAndConditions from './pages/TermsAndConditions'
+import NotificationsManager from './components/NotificationsManager'
 
 function App() {
   return (
@@ -32,6 +33,7 @@ function App() {
               <Route path="/post-trip" element={<PostTrip />} />
               <Route path="/trips" element={<Trips />} />
               <Route path="/all-trips" element={<AllTrips />} />
+              <Route path="/notifications" element={<NotificationsManager />} />
               <Route path="/profile" element={<Profile />} />
               <Route path="/trip/:id" element={<TripDetails />} />
               <Route path="/user/:id" element={<UserProfile />} />

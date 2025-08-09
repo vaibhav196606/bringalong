@@ -7,8 +7,10 @@ import {
   MagnifyingGlassIcon,
   MapPinIcon, 
   CalendarIcon,
-  ArrowLeftIcon
+  ArrowLeftIcon,
+  BellIcon
 } from '@heroicons/react/24/outline'
+import TripNotificationModal from '../components/TripNotificationModal'
 
 interface Trip {
   _id: string
@@ -55,6 +57,7 @@ const SearchResults: React.FC = () => {
     toCountry: '',
     travelDate: ''
   })
+  const [showNotificationModal, setShowNotificationModal] = useState(false)
 
   useEffect(() => {
     // Get search parameters from URL or navigation state
@@ -282,6 +285,29 @@ const SearchResults: React.FC = () => {
             <p className="text-gray-600 mb-6">
               Try adjusting your search criteria or check back later for new trips.
             </p>
+            
+            {/* Notification option */}
+            {searchParams.fromLocation && searchParams.toLocation && (
+              <div className="mb-6">
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
+                  <BellIcon className="w-8 h-8 text-blue-600 mx-auto mb-2" />
+                  <h4 className="text-lg font-medium text-blue-900 mb-2">
+                    Get notified when trips are available
+                  </h4>
+                  <p className="text-blue-700 text-sm mb-3">
+                    We'll send you one email when someone posts a trip on this route.
+                  </p>
+                  <button
+                    onClick={() => setShowNotificationModal(true)}
+                    className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+                  >
+                    <BellIcon className="w-4 h-4 mr-2" />
+                    Notify Me for This Route
+                  </button>
+                </div>
+              </div>
+            )}
+            
             <Link
               to="/post-trip"
               className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-lg transition-colors"
@@ -302,6 +328,28 @@ const SearchResults: React.FC = () => {
                       showLocationIndicator={false}
                     />
                   ))}
+                </div>
+              </div>
+            )}
+
+            {/* Small Notification Reminder at Top (for broader matches only) */}
+            {trips.filter(trip => trip.matchType !== 'broader').length === 0 && 
+             trips.filter(trip => trip.matchType === 'broader').length > 0 && 
+             searchParams.fromLocation && searchParams.toLocation && (
+              <div className="mb-6">
+                <div className="text-center">
+                  <div className="inline-flex items-center px-4 py-2 bg-yellow-50 border border-yellow-200 rounded-lg">
+                    <BellIcon className="w-4 h-4 text-yellow-600 mr-2" />
+                    <span className="text-sm text-yellow-800">
+                      No exact matches for <strong>{searchParams.fromLocation} → {searchParams.toLocation}</strong>.{' '}
+                      <button
+                        onClick={() => setShowNotificationModal(true)}
+                        className="text-yellow-900 underline hover:text-yellow-700 font-medium"
+                      >
+                        Get notified when available
+                      </button>
+                    </span>
+                  </div>
                 </div>
               </div>
             )}
@@ -332,9 +380,52 @@ const SearchResults: React.FC = () => {
                 </div>
               </div>
             )}
+
+            {/* Main Notification Section After Broader Matches */}
+            {trips.filter(trip => trip.matchType !== 'broader').length === 0 && 
+             trips.filter(trip => trip.matchType === 'broader').length > 0 && 
+             searchParams.fromLocation && searchParams.toLocation && (
+              <div className="mt-8">
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
+                  <div className="text-center">
+                    <BellIcon className="w-12 h-12 text-blue-600 mx-auto mb-3" />
+                    <h3 className="text-xl font-semibold text-blue-900 mb-2">
+                      Want the exact route instead?
+                    </h3>
+                    <p className="text-blue-700 mb-4">
+                      The trips above are from the same region, but not your exact route <strong>{searchParams.fromLocation} → {searchParams.toLocation}</strong>
+                    </p>
+                    <p className="text-blue-600 text-sm mb-4">
+                      Get notified when someone posts a trip on your exact route!
+                    </p>
+                    <button
+                      onClick={() => setShowNotificationModal(true)}
+                      className="inline-flex items-center px-6 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors font-medium"
+                    >
+                      <BellIcon className="w-5 h-5 mr-2" />
+                      Notify Me for {searchParams.fromLocation} → {searchParams.toLocation}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         )}
       </div>
+      
+      {/* Trip Notification Modal */}
+      {searchParams.fromLocation && searchParams.toLocation && (
+        <TripNotificationModal
+          isOpen={showNotificationModal}
+          onClose={() => setShowNotificationModal(false)}
+          searchParams={{
+            fromCity: searchParams.fromLocation,
+            fromCountry: newSearchData.fromCountry || 'Auto-detected',
+            toCity: searchParams.toLocation,
+            toCountry: newSearchData.toCountry || 'Auto-detected'
+          }}
+        />
+      )}
     </div>
   )
 }

@@ -2,11 +2,54 @@ import express from 'express';
 import jwt from 'jsonwebtoken';
 import Trip from '../models/Trip.js';
 import User from '../models/User.js';
+import TripNotification from '../models/TripNotification.js';
 import { isCountrySearch, createCountryRegex } from '../utils/countryUtils.js';
 import { manualCleanup } from '../utils/cleanup.js';
 import emailService from '../utils/emailService.js';
 
 const router = express.Router();
+
+// Function to check and notify users about new trips
+async function checkAndNotifyUsers(newTrip, travelerName) {
+  try {
+    // Find matching notifications
+    const matchingNotifications = await TripNotification.find({
+      fromCity: newTrip.fromCity,
+      fromCountry: newTrip.fromCountry,
+      toCity: newTrip.toCity,
+      toCountry: newTrip.toCountry,
+      notified: false,
+      $or: [
+        { maxDate: null }, // No date restriction
+        { maxDate: { $gte: new Date(newTrip.travelDate) } } // Date matches criteria
+      ]
+    }).populate('userId', 'name email');
+
+    console.log(`Found ${matchingNotifications.length} matching notifications for ${newTrip.fromCity} → ${newTrip.toCity}`);
+
+    // Send notifications and mark as notified
+    for (const notification of matchingNotifications) {
+      try {
+        await emailService.sendTripNotificationEmail(
+          notification.email,
+          notification.userId.name,
+          newTrip,
+          travelerName
+        );
+
+        // Mark as notified
+        notification.notified = true;
+        await notification.save();
+
+        console.log(`✅ Notification sent to ${notification.email} for trip ${newTrip._id}`);
+      } catch (emailError) {
+        console.error(`❌ Failed to send notification to ${notification.email}:`, emailError);
+      }
+    }
+  } catch (error) {
+    console.error('❌ Error in notification system:', error);
+  }
+}
 
 // Verify token middleware
 const verifyToken = (req, res, next) => {
@@ -448,6 +491,9 @@ router.post('/', verifyToken, async (req, res) => {
         };
         await emailService.sendTripPostConfirmationEmail(user.email, user.name, tripDetails);
         console.log('✅ Trip post confirmation email sent successfully');
+
+        // Check for matching notifications and send emails
+        await checkAndNotifyUsers(populatedTrip, user.name);
       }
     } catch (emailError) {
       console.error('❌ Failed to send trip post confirmation email:', emailError);

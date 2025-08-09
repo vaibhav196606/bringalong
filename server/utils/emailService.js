@@ -784,6 +784,117 @@ Thank you for being part of the BringAlong community!
 © ${new Date().getFullYear()} BringAlong. A non-profit community platform.
     `;
   }
+
+  async sendTripNotificationEmail(userEmail, userName, trip, travelerName) {
+    const subject = `New Trip Available: ${trip.fromCity} → ${trip.toCity}`;
+    
+    const htmlContent = this.getTripNotificationHtmlTemplate(userName, trip, travelerName);
+    const textContent = this.getTripNotificationTextTemplate(userName, trip, travelerName);
+
+    try {
+      await this.transporter.sendMail({
+        from: process.env.EMAIL_FROM || process.env.EMAIL_USER,
+        to: userEmail,
+        subject,
+        text: textContent,
+        html: htmlContent
+      });
+
+      console.log('Trip notification email sent to:', userEmail);
+      return { success: true };
+    } catch (error) {
+      console.error('Error sending trip notification email:', error);
+      throw error;
+    }
+  }
+
+  getTripNotificationHtmlTemplate(userName, trip, travelerName) {
+    return `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <style>
+        .container { max-width: 600px; margin: 0 auto; font-family: Arial, sans-serif; }
+        .header { background: linear-gradient(135deg, #3B82F6, #1D4ED8); color: white; padding: 30px; text-align: center; }
+        .content { padding: 30px; background: #f8fafc; }
+        .trip-card { background: white; border-radius: 12px; padding: 24px; margin: 20px 0; border-left: 4px solid #3B82F6; }
+        .route { font-size: 24px; font-weight: bold; color: #1F2937; margin-bottom: 16px; }
+        .details { color: #6B7280; margin: 8px 0; }
+        .cta-button { background: #3B82F6; color: white; padding: 12px 24px; text-decoration: none; border-radius: 8px; display: inline-block; margin: 20px 0; }
+        .footer { padding: 20px; text-align: center; color: #6B7280; font-size: 14px; }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <div class="header">
+          <h1>🎯 Trip Notification</h1>
+          <p>A new trip matching your search is now available!</p>
+        </div>
+        
+        <div class="content">
+          <p>Hi ${userName},</p>
+          
+          <p>Great news! A traveler has posted a new trip on the route you're interested in:</p>
+          
+          <div class="trip-card">
+            <div class="route">${trip.fromCity} ✈️ ${trip.toCity}</div>
+            <div class="details">📍 ${trip.fromCountry} → ${trip.toCountry}</div>
+            <div class="details">📅 Travel Date: ${new Date(trip.travelDate).toLocaleDateString()}</div>
+            ${trip.returnDate ? `<div class="details">🔄 Return Date: ${new Date(trip.returnDate).toLocaleDateString()}</div>` : ''}
+            <div class="details">💰 Service Fee: ${trip.currency} ${trip.serviceFee}</div>
+            <div class="details">👤 Traveler: ${travelerName}</div>
+            ${trip.notes ? `<div class="details">📝 Notes: ${trip.notes}</div>` : ''}
+          </div>
+          
+          <p><strong>What's Next?</strong></p>
+          <ul>
+            <li>View the complete trip details and traveler profile</li>
+            <li>Connect with ${travelerName} via LinkedIn for verification</li>
+            <li>Discuss your item requirements and delivery details</li>
+          </ul>
+          
+          <div style="text-align: center;">
+            <a href="${process.env.FRONTEND_URL || 'https://bringalong.vercel.app'}/trip/${trip._id}" class="cta-button">
+              View Trip Details
+            </a>
+          </div>
+          
+          <p><em>Note: This is a one-time notification for this route. You won't receive additional emails for this search.</em></p>
+        </div>
+        
+        <div class="footer">
+          <p>🌍 BringAlong - Connecting Travelers & Communities</p>
+          <p>This notification was sent because you requested to be notified about trips on this route.</p>
+        </div>
+      </div>
+    </body>
+    </html>
+    `;
+  }
+
+  getTripNotificationTextTemplate(userName, trip, travelerName) {
+    return `
+    New Trip Available: ${trip.fromCity} → ${trip.toCity}
+    
+    Hi ${userName},
+    
+    A new trip matching your search is now available!
+    
+    Route: ${trip.fromCity} → ${trip.toCity}
+    Location: ${trip.fromCountry} → ${trip.toCountry}
+    Travel Date: ${new Date(trip.travelDate).toLocaleDateString()}
+    ${trip.returnDate ? `Return Date: ${new Date(trip.returnDate).toLocaleDateString()}` : ''}
+    Service Fee: ${trip.currency} ${trip.serviceFee}
+    Traveler: ${travelerName}
+    ${trip.notes ? `Notes: ${trip.notes}` : ''}
+    
+    View trip details: ${process.env.FRONTEND_URL || 'https://bringalong.vercel.app'}/trip/${trip._id}
+    
+    Connect with ${travelerName} via LinkedIn for verification and to discuss your requirements.
+    
+    - BringAlong Team
+    `;
+  }
 }
 
 // Create singleton instance

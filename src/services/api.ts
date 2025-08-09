@@ -69,6 +69,13 @@ export const apiService = {
     getStats: (id: string) => api.get(`/users/${id}/stats`),
   },
 
+  // Notification endpoints
+  notifications: {
+    create: (data: any) => api.post('/notifications', data),
+    getMyNotifications: () => api.get('/notifications/my-notifications'),
+    delete: (id: string) => api.delete(`/notifications/${id}`),
+  },
+
   // Health check
   health: () => api.get('/health'),
 

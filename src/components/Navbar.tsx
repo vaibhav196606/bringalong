@@ -6,6 +6,7 @@ import {
   HomeIcon, 
   MapIcon, 
   CalendarIcon, 
+  BellIcon,
   ArrowRightOnRectangleIcon,
   Bars3Icon,
   XMarkIcon,
@@ -51,6 +52,7 @@ const Navbar: React.FC = () => {
     { name: 'Home', path: '/', icon: HomeIcon },
     { name: 'Post Trip', path: '/post-trip', icon: MapIcon },
     { name: 'My Trips', path: '/trips', icon: CalendarIcon },
+    { name: 'Notifications', path: '/notifications', icon: BellIcon },
   ]
 
   return (
