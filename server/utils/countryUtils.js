@@ -93,13 +93,17 @@ export const getNormalizedCountryName = (searchTerm) => {
 export const createCountryRegex = (searchTerm) => {
   const normalizedCountry = getNormalizedCountryName(searchTerm);
   if (!normalizedCountry || !countryMappings[normalizedCountry]) {
-    // Fallback to original search term
-    return new RegExp(searchTerm, 'i');
+    // Fallback to original search term with word boundaries
+    return new RegExp(`\\b${searchTerm}\\b`, 'i');
   }
   
-  // Create regex that matches any variation of the country
+  // Create regex that matches any variation of the country with word boundaries
   const variations = countryMappings[normalizedCountry];
-  const escapedVariations = variations.map(v => v.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
+  const escapedVariations = variations.map(v => {
+    // Escape special regex characters and add word boundaries
+    const escaped = v.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    return `\\b${escaped}\\b`;
+  });
   const pattern = `(${escapedVariations.join('|')})`;
   
   return new RegExp(pattern, 'i');
