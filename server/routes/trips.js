@@ -12,20 +12,65 @@ const router = express.Router();
 // Function to check and notify users about new trips
 async function checkAndNotifyUsers(newTrip, travelerName) {
   try {
-    // Find matching notifications
-    const matchingNotifications = await TripNotification.find({
-      fromCity: newTrip.fromCity,
-      fromCountry: newTrip.fromCountry,
-      toCity: newTrip.toCity,
-      toCountry: newTrip.toCountry,
+    console.log(`🔍 Checking notifications for new trip: ${newTrip.fromCity}, ${newTrip.fromCountry} → ${newTrip.toCity}, ${newTrip.toCountry}`);
+    
+    // Build flexible matching query
+    const matchQuery = {
       notified: false,
       $or: [
         { maxDate: null }, // No date restriction
         { maxDate: { $gte: new Date(newTrip.travelDate) } } // Date matches criteria
+      ],
+      $and: [
+        {
+          $or: [
+            // Exact city match
+            { fromCity: newTrip.fromCity },
+            // Case-insensitive city match
+            { fromCity: { $regex: new RegExp('^' + newTrip.fromCity + '$', 'i') } },
+            // Handle legacy format: "City, Country" stored as city
+            { fromCity: `${newTrip.fromCity}, ${newTrip.fromCountry}` },
+            { fromCity: { $regex: new RegExp('^' + newTrip.fromCity + ',\\s*' + newTrip.fromCountry + '$', 'i') } }
+          ]
+        },
+        {
+          $or: [
+            // Exact city match  
+            { toCity: newTrip.toCity },
+            // Case-insensitive city match
+            { toCity: { $regex: new RegExp('^' + newTrip.toCity + '$', 'i') } },
+            // Handle legacy format: "City, Country" stored as city
+            { toCity: `${newTrip.toCity}, ${newTrip.toCountry}` },
+            { toCity: { $regex: new RegExp('^' + newTrip.toCity + ',\\s*' + newTrip.toCountry + '$', 'i') } }
+          ]
+        },
+        {
+          $or: [
+            // Exact country match
+            { fromCountry: newTrip.fromCountry },
+            // Auto-detected fallback (ignore country match)
+            { fromCountry: 'Auto-detected' },
+            // Case-insensitive country match
+            { fromCountry: { $regex: new RegExp('^' + newTrip.fromCountry + '$', 'i') } }
+          ]
+        },
+        {
+          $or: [
+            // Exact country match
+            { toCountry: newTrip.toCountry },
+            // Auto-detected fallback (ignore country match)
+            { toCountry: 'Auto-detected' },
+            // Case-insensitive country match
+            { toCountry: { $regex: new RegExp('^' + newTrip.toCountry + '$', 'i') } }
+          ]
+        }
       ]
-    }).populate('userId', 'name email');
+    };
 
-    console.log(`Found ${matchingNotifications.length} matching notifications for ${newTrip.fromCity} → ${newTrip.toCity}`);
+    // Find matching notifications
+    const matchingNotifications = await TripNotification.find(matchQuery).populate('userId', 'name email');
+
+    console.log(`📧 Found ${matchingNotifications.length} matching notifications for ${newTrip.fromCity} → ${newTrip.toCity}`);
 
     // Send notifications and mark as notified
     for (const notification of matchingNotifications) {
@@ -574,3 +619,4 @@ router.delete('/:id', verifyToken, async (req, res) => {
 router.post('/cleanup', manualCleanup);
 
 export default router;
+export { checkAndNotifyUsers };

@@ -499,10 +499,10 @@ const SearchResults: React.FC = () => {
           isOpen={showNotificationModal}
           onClose={() => setShowNotificationModal(false)}
           searchParams={{
-            fromCity: searchParams.fromLocation,
-            fromCountry: newSearchData.fromCountry || 'Auto-detected',
-            toCity: searchParams.toLocation,
-            toCountry: newSearchData.toCountry || 'Auto-detected'
+            fromCity: searchParams.fromLocation.includes(',') ? searchParams.fromLocation.split(',')[0].trim() : searchParams.fromLocation,
+            fromCountry: searchParams.fromLocation.includes(',') ? searchParams.fromLocation.split(',')[1].trim() : (newSearchData.fromCountry || 'Auto-detected'),
+            toCity: searchParams.toLocation.includes(',') ? searchParams.toLocation.split(',')[0].trim() : searchParams.toLocation,
+            toCountry: searchParams.toLocation.includes(',') ? searchParams.toLocation.split(',')[1].trim() : (newSearchData.toCountry || 'Auto-detected')
           }}
         />
       )}
