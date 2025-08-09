@@ -174,8 +174,10 @@ router.get('/', async (req, res) => {
     // Handle 'from' parameter for exact search
     if (from) {
       if (isCountrySearch(from)) {
-        exactOriginalDirection.fromCountry = createCountryRegex(from);
-        exactReverseDirection.toCountry = createCountryRegex(from);
+        const countryRegex = createCountryRegex(from);
+        const pattern = countryRegex.source;
+        exactOriginalDirection.fromCountry = { $regex: pattern, $options: 'i' };
+        exactReverseDirection.toCountry = { $regex: pattern, $options: 'i' };
       } else {
         exactOriginalDirection.fromCity = { $regex: from, $options: 'i' };
         exactReverseDirection.toCity = { $regex: from, $options: 'i' };
@@ -185,8 +187,10 @@ router.get('/', async (req, res) => {
     // Handle 'to' parameter for exact search
     if (to) {
       if (isCountrySearch(to)) {
-        exactOriginalDirection.toCountry = createCountryRegex(to);
-        exactReverseDirection.fromCountry = createCountryRegex(to);
+        const countryRegex = createCountryRegex(to);
+        const pattern = countryRegex.source;
+        exactOriginalDirection.toCountry = { $regex: pattern, $options: 'i' };
+        exactReverseDirection.fromCountry = { $regex: pattern, $options: 'i' };
       } else {
         exactOriginalDirection.toCity = { $regex: to, $options: 'i' };
         exactReverseDirection.fromCity = { $regex: to, $options: 'i' };

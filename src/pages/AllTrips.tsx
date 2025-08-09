@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { apiService } from '../services/api'
 import TripCard from '../components/TripCard'
 import LocationAutocomplete from '../components/LocationAutocomplete'
+import TripNotificationModal from '../components/TripNotificationModal'
 import SEO from '../components/SEO'
 import { useCurrency } from '../contexts/CurrencyContext'
 import { 
@@ -11,7 +12,8 @@ import {
   ChevronLeftIcon,
   ChevronRightIcon,
   FunnelIcon,
-  ArrowsUpDownIcon
+  ArrowsUpDownIcon,
+  BellIcon
 } from '@heroicons/react/24/outline'
 
 interface Trip {
@@ -55,6 +57,7 @@ const AllTrips: React.FC = () => {
   const [totalPages, setTotalPages] = useState(1)
   const [totalTrips, setTotalTrips] = useState(0)
   const [frontendSorting, setFrontendSorting] = useState(false) // Track if we're doing frontend sorting
+  const [showNotificationModal, setShowNotificationModal] = useState(false)
   const { convertAmount } = useCurrency()
   const [filters, setFilters] = useState<Filters>({
     fromLocation: '',
@@ -328,17 +331,60 @@ const AllTrips: React.FC = () => {
             <MagnifyingGlassIcon className="w-16 h-16 text-gray-400 mx-auto mb-4" />
             <h3 className="text-xl font-semibold text-gray-900 mb-2">No trips found</h3>
             <p className="text-gray-600 mb-6">
-              Try adjusting your filters or check back later for new trips.
+              {filters.fromLocation && filters.toLocation ? 
+                `No trips found from ${filters.fromLocation} to ${filters.toLocation}. Try adjusting your filters or set up a notification to get alerted when a trip becomes available.` :
+                'Try adjusting your filters or check back later for new trips.'
+              }
             </p>
+            
+            {/* Show notification option when both locations are entered */}
+            {filters.fromLocation && filters.toLocation && (
+              <div className="mb-6">
+                <button
+                  onClick={() => setShowNotificationModal(true)}
+                  className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors flex items-center mx-auto"
+                >
+                  <BellIcon className="w-5 h-5 mr-2" />
+                  Get Notified When Available
+                </button>
+                <p className="text-sm text-gray-500 mt-2">
+                  We'll email you when someone posts a trip on this route
+                </p>
+              </div>
+            )}
+            
             <Link
               to="/post-trip"
-              className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-lg transition-colors"
+              className="bg-gray-600 hover:bg-gray-700 text-white font-semibold py-2 px-6 rounded-lg transition-colors"
             >
               Post Your Trip
             </Link>
           </div>
         ) : (
           <>
+            {/* Small Notification Reminder at Top (for broader matches only) */}
+            {filters.fromLocation && filters.toLocation && 
+             trips.length > 0 && 
+             trips.filter(trip => trip.matchType !== 'broader' && !trip.nearToYou).length === 0 && 
+             trips.filter(trip => trip.matchType === 'broader' || trip.nearToYou).length > 0 && (
+              <div className="mb-6">
+                <div className="text-center">
+                  <div className="inline-flex items-center px-4 py-2 bg-yellow-50 border border-yellow-200 rounded-lg">
+                    <BellIcon className="w-4 h-4 text-yellow-600 mr-2" />
+                    <span className="text-sm text-yellow-800">
+                      No exact matches for <strong>{filters.fromLocation} → {filters.toLocation}</strong>.{' '}
+                      <button
+                        onClick={() => setShowNotificationModal(true)}
+                        className="text-yellow-900 underline hover:text-yellow-700 font-medium"
+                      >
+                        Get notified when available
+                      </button>
+                    </span>
+                  </div>
+                </div>
+              </div>
+            )}
+
             <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-8">
               {trips.map((trip) => (
                 <TripCard
@@ -348,6 +394,30 @@ const AllTrips: React.FC = () => {
                 />
               ))}
             </div>
+
+            {/* Show notification option when only broader matches found */}
+            {filters.fromLocation && filters.toLocation && 
+             trips.length > 0 && 
+             trips.every(trip => trip.matchType === 'broader' || trip.nearToYou) && (
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 mb-8 text-center">
+                <div className="flex flex-col items-center">
+                  <BellIcon className="w-8 h-8 text-blue-600 mb-3" />
+                  <h3 className="text-lg font-semibold text-blue-900 mb-2">
+                    No exact matches found for {filters.fromLocation} → {filters.toLocation}
+                  </h3>
+                  <p className="text-blue-700 mb-4">
+                    We're showing nearby trips, but you can get notified when someone posts an exact match.
+                  </p>
+                  <button
+                    onClick={() => setShowNotificationModal(true)}
+                    className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors flex items-center"
+                  >
+                    <BellIcon className="w-4 h-4 mr-2" />
+                    Notify me for exact matches
+                  </button>
+                </div>
+              </div>
+            )}
 
             {/* Pagination */}
             {totalPages > 1 && (
@@ -386,6 +456,18 @@ const AllTrips: React.FC = () => {
           </>
         )}
       </div>
+      
+      {/* Trip Notification Modal */}
+      <TripNotificationModal
+        isOpen={showNotificationModal}
+        onClose={() => setShowNotificationModal(false)}
+        searchParams={{
+          fromCity: filters.fromLocation,
+          fromCountry: filters.fromCountry || 'Auto-detected',
+          toCity: filters.toLocation,
+          toCountry: filters.toCountry || 'Auto-detected'
+        }}
+      />
       </div>
     </>
   )
