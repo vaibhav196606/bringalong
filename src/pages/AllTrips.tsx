@@ -1,15 +1,13 @@
 import React, { useState, useEffect, useCallback } from 'react'
 import { Link } from 'react-router-dom'
 import { apiService } from '../services/api'
-import PriceDisplay from '../components/PriceDisplay'
+import TripCard from '../components/TripCard'
 import LocationAutocomplete from '../components/LocationAutocomplete'
 import SEO from '../components/SEO'
 import { useCurrency } from '../contexts/CurrencyContext'
 import { 
   MagnifyingGlassIcon,
   MapPinIcon, 
-  CalendarIcon,
-  UserIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
   FunnelIcon,
@@ -23,6 +21,7 @@ interface Trip {
   toCity: string
   toCountry: string
   travelDate: string
+  returnDate?: string
   serviceFee: number
   currency: string
   userId: {
@@ -63,7 +62,7 @@ const AllTrips: React.FC = () => {
     toLocation: '',
     toCountry: '',
     sortBy: 'date',
-    sortOrder: 'desc'
+    sortOrder: 'asc' // Changed to 'asc' for closest dates first
   })
   const [showFilters, setShowFilters] = useState(false)
 
@@ -201,21 +200,12 @@ const AllTrips: React.FC = () => {
       toLocation: '',
       toCountry: '',
       sortBy: 'date',
-      sortOrder: 'desc'
+      sortOrder: 'asc' // Changed to 'asc' for closest dates first
     })
     setCurrentPage(1)
     // Clear frontend sorting data
     setFrontendSorting(false)
     setAllTripsForSorting([])
-  }
-
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString)
-    return date.toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric'
-    })
   }
 
   return (
@@ -307,8 +297,8 @@ const AllTrips: React.FC = () => {
                   onChange={(e) => handleFilterChange({ sortOrder: e.target.value as 'asc' | 'desc' })}
                   className="w-full pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 >
-                  <option value="desc">{filters.sortBy === 'date' ? 'Newest First' : 'Highest First'}</option>
-                  <option value="asc">{filters.sortBy === 'date' ? 'Oldest First' : 'Lowest First'}</option>
+                  <option value="desc">{filters.sortBy === 'date' ? 'Latest First' : 'Highest First'}</option>
+                  <option value="asc">{filters.sortBy === 'date' ? 'Earliest First' : 'Lowest First'}</option>
                 </select>
               </div>
             </div>
@@ -351,61 +341,11 @@ const AllTrips: React.FC = () => {
           <>
             <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-8">
               {trips.map((trip) => (
-                <Link
+                <TripCard
                   key={trip._id}
-                  to={`/trip/${trip._id}`}
-                  className="bg-white rounded-xl shadow-lg p-6 border border-gray-100 hover:shadow-xl transition-shadow block"
-                >
-                  <div className="flex items-center justify-between mb-4">
-                    <div>
-                      <div className="flex items-center space-x-2 mb-1">
-                        <div className="text-lg font-semibold text-gray-900">
-                          {trip.fromCity} → {trip.toCity}
-                        </div>
-                        {trip.nearToYou && (
-                          <span className="inline-flex items-center px-2 py-1 text-xs font-medium bg-orange-100 text-orange-800 rounded-full">
-                            📍 Near by
-                          </span>
-                        )}
-                      </div>
-                      <p className="text-sm text-gray-500">
-                        {trip.fromCountry} → {trip.toCountry}
-                      </p>
-                    </div>
-                    <span className="text-green-600 font-medium">
-                      <PriceDisplay 
-                        amount={trip.serviceFee} 
-                        currency={trip.currency} 
-                        showOriginal={true}
-                      />
-                    </span>
-                  </div>
-                  
-                  <div className="space-y-2 mb-4">
-                    <div className="flex items-center text-gray-600">
-                      <CalendarIcon className="w-4 h-4 mr-2" />
-                      <span className="text-sm">
-                        {formatDate(trip.travelDate)}
-                      </span>
-                    </div>
-                  </div>
-                  
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-2">
-                      <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center">
-                        <UserIcon className="w-4 h-4 text-gray-500" />
-                      </div>
-                      <div>
-                        <div className="text-sm font-medium">{trip.userId.name}</div>
-                        {trip.userId.verified && (
-                          <div className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full inline-block">
-                            Verified
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                </Link>
+                  trip={trip}
+                  showLocationIndicator={false}
+                />
               ))}
             </div>
 

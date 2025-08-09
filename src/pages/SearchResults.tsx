@@ -2,14 +2,12 @@ import React, { useState, useEffect } from 'react'
 import { useLocation, useNavigate, Link } from 'react-router-dom'
 import { apiService } from '../services/api'
 import LocationAutocomplete from '../components/LocationAutocomplete'
-import PriceDisplay from '../components/PriceDisplay'
+import TripCard from '../components/TripCard'
 import { 
   MagnifyingGlassIcon,
   MapPinIcon, 
   CalendarIcon,
-  ArrowLeftIcon,
-  UserIcon,
-  ArrowRightIcon
+  ArrowLeftIcon
 } from '@heroicons/react/24/outline'
 
 interface Trip {
@@ -19,6 +17,7 @@ interface Trip {
   toCity: string
   toCountry: string
   travelDate: string
+  returnDate?: string
   serviceFee: number
   currency: string
   userId: {
@@ -178,26 +177,6 @@ const SearchResults: React.FC = () => {
     return parts.length > 0 ? parts.join(' ') : 'all trips'
   }
 
-  const isReverseTrip = (trip: any) => {
-    // Check if this trip is in the reverse direction of what the user searched
-    if (!searchParams.fromLocation || !searchParams.toLocation) return false
-    
-    const searchFrom = searchParams.fromLocation.toLowerCase()
-    const searchTo = searchParams.toLocation.toLowerCase()
-    const tripFrom = trip.fromCity.toLowerCase()
-    const tripTo = trip.toCity.toLowerCase()
-    const tripFromCountry = trip.fromCountry.toLowerCase()
-    const tripToCountry = trip.toCountry.toLowerCase()
-    
-    // Check if trip direction is opposite to search direction
-    const isReverse = (
-      (tripFrom.includes(searchTo) || tripFromCountry.includes(searchTo)) &&
-      (tripTo.includes(searchFrom) || tripToCountry.includes(searchFrom))
-    )
-    
-    return isReverse
-  }
-
   return (
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -316,72 +295,13 @@ const SearchResults: React.FC = () => {
             {trips.filter(trip => trip.matchType !== 'broader').length > 0 && (
               <div>
                 <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {trips.filter(trip => trip.matchType !== 'broader').map((trip) => {
-                    const isReverse = isReverseTrip(trip)
-                    return (
-                      <div key={trip._id} className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow">
-                        <div className="p-6">
-                          {/* Route */}
-                          <div className="flex items-center justify-between mb-4">
-                            <div>
-                              <h3 className="text-lg font-semibold text-gray-900">
-                                {trip.fromCity} {isReverse ? '↔' : '→'} {trip.toCity}
-                              </h3>
-                              <p className="text-sm text-gray-500">
-                                {trip.fromCountry} {isReverse ? '↔' : '→'} {trip.toCountry}
-                              </p>
-                              {isReverse && (
-                                <span className="inline-flex items-center px-2 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded-full mt-1">
-                                  ↩️ Return trip
-                                </span>
-                              )}
-                            </div>
-                            <span className="text-green-600 font-medium">
-                              <PriceDisplay 
-                                amount={trip.serviceFee} 
-                                currency={trip.currency} 
-                                showOriginal={true}
-                              />
-                            </span>
-                          </div>
-
-                          {/* Date */}
-                          <div className="flex items-center text-gray-600 mb-4">
-                            <CalendarIcon className="w-4 h-4 mr-2" />
-                            <span className="text-sm">
-                              {formatDate(trip.travelDate)}
-                            </span>
-                          </div>
-
-                          {/* Traveler Info */}
-                          <div className="flex items-center justify-between mb-4">
-                            <div className="flex items-center">
-                              <div className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center mr-3">
-                                <UserIcon className="w-4 h-4 text-gray-500" />
-                              </div>
-                              <div>
-                                <p className="text-sm font-medium text-gray-900">{trip.userId.name}</p>
-                                {trip.userId.verified && (
-                                  <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full">
-                                    Verified
-                                  </span>
-                                )}
-                              </div>
-                            </div>
-                          </div>
-
-                          {/* View Details Button */}
-                          <Link
-                            to={`/trip/${trip._id}`}
-                            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors flex items-center justify-center"
-                          >
-                            View Details
-                            <ArrowRightIcon className="w-4 h-4 ml-2" />
-                          </Link>
-                        </div>
-                      </div>
-                    )
-                  })}
+                  {trips.filter(trip => trip.matchType !== 'broader').map((trip) => (
+                    <TripCard
+                      key={trip._id}
+                      trip={trip}
+                      showLocationIndicator={false}
+                    />
+                  ))}
                 </div>
               </div>
             )}
@@ -402,79 +322,13 @@ const SearchResults: React.FC = () => {
                 </div>
 
                 <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {trips.filter(trip => trip.matchType === 'broader').map((trip) => {
-                    const isReverse = isReverseTrip(trip)
-                    return (
-                      <div key={trip._id} className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow border-l-4 border-orange-400">
-                        <div className="p-6">
-                          {/* Route with Near to You tag */}
-                          <div className="flex items-center justify-between mb-4">
-                            <div>
-                              <div className="flex items-center space-x-2 mb-1">
-                                <h3 className="text-lg font-semibold text-gray-900">
-                                  {trip.fromCity} {isReverse ? '↔' : '→'} {trip.toCity}
-                                </h3>
-                                {trip.nearToYou && (
-                                  <span className="inline-flex items-center px-2 py-1 text-xs font-medium bg-orange-100 text-orange-800 rounded-full">
-                                    📍 Near by
-                                  </span>
-                                )}
-                              </div>
-                              <p className="text-sm text-gray-500">
-                                {trip.fromCountry} {isReverse ? '↔' : '→'} {trip.toCountry}
-                              </p>
-                              {isReverse && (
-                                <span className="inline-flex items-center px-2 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded-full mt-1">
-                                  ↩️ Return trip
-                                </span>
-                              )}
-                            </div>
-                            <span className="text-green-600 font-medium">
-                              <PriceDisplay 
-                                amount={trip.serviceFee} 
-                                currency={trip.currency} 
-                                showOriginal={true}
-                              />
-                            </span>
-                          </div>
-
-                          {/* Date */}
-                          <div className="flex items-center text-gray-600 mb-4">
-                            <CalendarIcon className="w-4 h-4 mr-2" />
-                            <span className="text-sm">
-                              {formatDate(trip.travelDate)}
-                            </span>
-                          </div>
-
-                          {/* Traveler Info */}
-                          <div className="flex items-center justify-between mb-4">
-                            <div className="flex items-center">
-                              <div className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center mr-3">
-                                <UserIcon className="w-4 h-4 text-gray-500" />
-                              </div>
-                              <div>
-                                <p className="text-sm font-medium text-gray-900">{trip.userId.name}</p>
-                                {trip.userId.verified && (
-                                  <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full">
-                                    Verified
-                                  </span>
-                                )}
-                              </div>
-                            </div>
-                          </div>
-
-                          {/* View Details Button */}
-                          <Link
-                            to={`/trip/${trip._id}`}
-                            className="w-full bg-orange-600 hover:bg-orange-700 text-white font-medium py-2 px-4 rounded-lg transition-colors flex items-center justify-center"
-                          >
-                            View Details
-                            <ArrowRightIcon className="w-4 h-4 ml-2" />
-                          </Link>
-                        </div>
-                      </div>
-                    )
-                  })}
+                  {trips.filter(trip => trip.matchType === 'broader').map((trip) => (
+                    <TripCard
+                      key={trip._id}
+                      trip={trip}
+                      showLocationIndicator={false}
+                    />
+                  ))}
                 </div>
               </div>
             )}

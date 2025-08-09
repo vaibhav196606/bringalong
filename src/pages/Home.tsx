@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import { apiService } from '../services/api'
 import LocationAutocomplete from '../components/LocationAutocomplete'
-import PriceDisplay from '../components/PriceDisplay'
+import TripCard from '../components/TripCard'
 import SEO from '../components/SEO'
 import { getUserDetailedLocation, filterTripsByLocation, debugLocationFiltering, type UserLocation } from '../utils/locationUtils'
 import { 
@@ -14,8 +14,7 @@ import {
   ArrowRightIcon,
   TruckIcon,
   ShieldCheckIcon,
-  UsersIcon,
-  UserIcon
+  UsersIcon
 } from '@heroicons/react/24/outline'
 
 interface Trip {
@@ -25,6 +24,7 @@ interface Trip {
   toCity: string
   toCountry: string
   travelDate: string
+  returnDate?: string
   serviceFee: number
   currency: string
   userId: {
@@ -84,11 +84,9 @@ const Home: React.FC = () => {
   const detectUserLocation = async (): Promise<UserLocation | null> => {
     try {
       setLocationLoading(true)
+      // getUserDetailedLocation already handles caching for 24 hours
       const location = await getUserDetailedLocation()
       setUserLocation(location)
-      
-      // User location detected for trip filtering
-      
       setLocationLoading(false)
       return location
     } catch (error) {
@@ -329,73 +327,12 @@ const Home: React.FC = () => {
               </div>
             ) : tripsAroundYou.length > 0 ? (
               tripsAroundYou.map((trip: Trip) => (
-                <Link
+                <TripCard
                   key={trip._id}
-                  to={`/trip/${trip._id}`}
-                  className="bg-white rounded-xl shadow-lg p-6 border border-gray-100 hover:shadow-xl transition-shadow block"
-                >
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="text-lg font-semibold text-gray-900">
-                      {trip.fromCity} → {trip.toCity}
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      {/* Location relevance indicator */}
-                      {userLocation && (() => {
-                        const isFromUserCity = userLocation.city && 
-                          trip.fromCity.toLowerCase() === userLocation.city.toLowerCase();
-                        const isToUserCity = userLocation.city && 
-                          trip.toCity.toLowerCase() === userLocation.city.toLowerCase();
-                        
-                        if (isFromUserCity || isToUserCity) {
-                          return (
-                            <span className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full font-medium">
-                              📍 Your City
-                            </span>
-                          );
-                        }
-                        return null;
-                      })()}
-                      {trip.userId.verified && (
-                        <ShieldCheckIcon className="w-5 h-5 text-green-600" />
-                      )}
-                    </div>
-                  </div>
-                  
-                  <div className="space-y-2 mb-4">
-                    <div className="flex items-center text-gray-600">
-                      <CalendarIcon className="w-4 h-4 mr-2" />
-                      <span className="text-sm">
-                        {new Date(trip.travelDate).toLocaleDateString()}
-                      </span>
-                    </div>
-                    <div className="flex items-center text-gray-600">
-                      <BanknotesIcon className="w-4 h-4 mr-2" />
-                      <span className="text-sm">
-                        Service Fee: <PriceDisplay 
-                          amount={trip.serviceFee} 
-                          currency={trip.currency} 
-                          showOriginal={true}
-                        />
-                      </span>
-                    </div>
-                  </div>
-                  
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-2">
-                      <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center">
-                        <UserIcon className="w-4 h-4 text-gray-500" />
-                      </div>
-                      <div>
-                        <div className="text-sm font-medium">{trip.userId.name}</div>
-                        {trip.userId.verified && (
-                          <div className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full inline-block">
-                            Verified
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                </Link>
+                  trip={trip}
+                  userLocation={userLocation}
+                  showLocationIndicator={true}
+                />
               ))
             ) : (
               <div className="col-span-3 text-center py-8">

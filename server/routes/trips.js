@@ -61,7 +61,20 @@ router.get('/', async (req, res) => {
     const fromLocation = parseLocation(from);
     const toLocation = parseLocation(to);
 
-    const baseQuery = { status };
+    // Get current date for filtering expired trips
+    const currentDate = new Date();
+    currentDate.setHours(0, 0, 0, 0); // Set to start of day
+
+    const baseQuery = { 
+      status,
+      // Filter out expired trips: either travelDate is in future, or returnDate is in future for return trips
+      $or: [
+        { travelDate: { $gte: currentDate } },
+        { 
+          returnDate: { $exists: true, $gte: currentDate }
+        }
+      ]
+    };
 
     // Build search conditions for exact matches first
     const exactSearchConditions = [];

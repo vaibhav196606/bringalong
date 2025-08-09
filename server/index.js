@@ -61,8 +61,19 @@ app.get('/api/stats', async (req, res) => {
     const { default: Trip } = await import('./models/Trip.js');
     const { default: User } = await import('./models/User.js');
     
-    // Get actual total trips count (all trips, not just completed)
-    const totalTripsCount = await Trip.countDocuments();
+    // Get current date for filtering expired trips
+    const currentDate = new Date();
+    currentDate.setHours(0, 0, 0, 0); // Set to start of day
+    
+    // Get active trips count (non-expired trips only)
+    const totalTripsCount = await Trip.countDocuments({
+      $or: [
+        { travelDate: { $gte: currentDate } },
+        { 
+          returnDate: { $exists: true, $gte: currentDate }
+        }
+      ]
+    });
     
     // Get total users count
     const totalUsersCount = await User.countDocuments();
